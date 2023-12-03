@@ -4,16 +4,20 @@ def start_game():
     mat = []
     for _ in range(4):
         mat.append([0] * 4)
-    add_new_2(mat)
+    add_new(mat)
     return mat
 
-def add_new_2(mat):
+def add_new(mat):
     r = random.randint(0, 3)
     c = random.randint(0, 3)
     while mat[r][c] != 0:
         r = random.randint(0, 3)
         c = random.randint(0, 3)
-    mat[r][c] = 2
+    pick = random.randint(0,1)
+    if pick == 0:
+        mat[r][c] = 2
+    else:
+        mat[r][c] = 4
 
 def get_current_state(mat):
     """
