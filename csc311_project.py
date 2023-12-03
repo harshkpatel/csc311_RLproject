@@ -32,7 +32,7 @@ def main():
             print("SCORE: ",score)
 
             if status == 'GAME NOT OVER':
-                logic.add_new_2(mat)
+                logic.add_new(mat)
             else:
                 print("Game over! Final state:")
                 print_board(mat)
@@ -43,3 +43,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
