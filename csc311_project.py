@@ -26,8 +26,10 @@ def main():
             elif move == 'D':
                 mat, flag = logic.move_right(mat)
 
-            status = logic.get_current_state(mat)
+            status = logic.get_current_state(mat)[0]
+            score = logic.get_current_state(mat)[1]
             print(status)
+            print("SCORE: ",score)
 
             if status == 'GAME NOT OVER':
                 logic.add_new_2(mat)
