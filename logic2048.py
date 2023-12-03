@@ -16,25 +16,31 @@ def add_new_2(mat):
     mat[r][c] = 2
 
 def get_current_state(mat):
+    """
     for i in range(4):
         for j in range(4):
             if mat[i][j] == 2048:
                 return 'WON'
+    """
+    score = 0
+    for i in range(4):
+        for j in range(4):
+            score = max(mat[i][j], score)
     for i in range(4):
         for j in range(4):
             if mat[i][j] == 0:
-                return 'GAME NOT OVER'
+                return ['GAME NOT OVER' , score]
     for i in range(3):
         for j in range(3):
             if mat[i][j] == mat[i + 1][j] or mat[i][j] == mat[i][j + 1]:
-                return 'GAME NOT OVER'
+                return ['GAME NOT OVER' , score]
     for j in range(3):
         if mat[3][j] == mat[3][j + 1]:
-            return 'GAME NOT OVER'
+            return ['GAME NOT OVER' , score]
     for i in range(3):
         if mat[i][3] == mat[i + 1][3]:
-            return 'GAME NOT OVER'
-    return 'LOST'
+            return ['GAME NOT OVER' , score]
+    return ['LOST' , score]
 
 def compress(mat):
     changed = False
@@ -101,3 +107,4 @@ def move_down(grid):
     new_grid, changed = move_right(new_grid)
     new_grid = transpose(new_grid)
     return new_grid, changed
+
