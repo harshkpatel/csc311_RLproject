@@ -1,114 +1,122 @@
 import random
+import copy
 
-def start_game():
-    mat = []
-    for _ in range(4):
-        mat.append([0] * 4)
-    add_new(mat)
-    return mat
+class Game2048():
+    def __init__(self):
+        self.matrix = [[0,0,0,0] for i in range(4)]
+        self.matrix[random.randint(0, 3)][random.randint(0, 3)] = random.choice([2, 4])
+        self.game_end = False
+        self.merge_score = 0
 
-def add_new(mat):
-    r = random.randint(0, 3)
-    c = random.randint(0, 3)
-    while mat[r][c] != 0:
-        r = random.randint(0, 3)
-        c = random.randint(0, 3)
-    pick = random.randint(0,1)
-    if pick == 0:
-        mat[r][c] = 2
-    else:
-        mat[r][c] = 4
+    def __str__(self):
+        output = ""
+        for row in self.matrix:
+            output += str(row) + "\n"
+        return output
 
-def get_current_state(mat):
-    """
-    for i in range(4):
-        for j in range(4):
-            if mat[i][j] == 2048:
-                return 'WON'
-    """
-    score = 0
-    for i in range(4):
-        for j in range(4):
-            score = max(mat[i][j], score)
-    for i in range(4):
-        for j in range(4):
-            if mat[i][j] == 0:
-                return ['GAME NOT OVER' , score]
-    for i in range(3):
-        for j in range(3):
-            if mat[i][j] == mat[i + 1][j] or mat[i][j] == mat[i][j + 1]:
-                return ['GAME NOT OVER' , score]
-    for j in range(3):
-        if mat[3][j] == mat[3][j + 1]:
-            return ['GAME NOT OVER' , score]
-    for i in range(3):
-        if mat[i][3] == mat[i + 1][3]:
-            return ['GAME NOT OVER' , score]
-    return ['LOST' , score]
+    def check_game(self):
+        # If there is at least one empty square
+        self.game_end = not (0 in self.matrix[0] or 0 in self.matrix[1] or 0 in self.matrix[2] or 0 in self.matrix[3])
+        
+        # If no empty square but you can still merge
+        if self.game_end:
+            for j in range(3): 
+                for k in range(3): 
+                    if(self.matrix[j][k] == self.matrix[j + 1][k] or self.matrix[j][k] == self.matrix[j][k + 1]): 
+                        self.game_end = False
 
-def compress(mat):
-    changed = False
-    new_mat = []
-    for i in range(4):
-        new_mat.append([0] * 4)
-    for i in range(4):
-        pos = 0
-        for j in range(4):
-            if mat[i][j] != 0:
-                new_mat[i][pos] = mat[i][j]
-                if j != pos:
-                    changed = True
-                pos += 1
-    return new_mat, changed
+            for j in range(3): 
+                if(self.matrix[3][j] == self.matrix[3][j + 1]): 
+                    self.game_end = False                
 
-def merge(mat):
-    changed = False
-    for i in range(4):
-        for j in range(3):
-            if mat[i][j] == mat[i][j + 1] and mat[i][j] != 0:
-                mat[i][j] = mat[i][j] * 2
-                mat[i][j + 1] = 0
-                changed = True
-    return mat, changed
+            for j in range(3): 
+                if(self.matrix[j][3] == self.matrix[j + 1][3]):  
+                    self.game_end = False
+        
+    def get_number(self):
+        row, col = random.randint(0, 3), random.randint(0, 3)
+        while self.matrix[row][col] != 0:
+            row, col = random.randint(0, 3), random.randint(0, 3)
+            
+        self.matrix[row][col] = random.choice([2, 4])
+        
+    def rotate(self):
+        out = []
+        for col in range(len(self.matrix[0])):
+            temp = []
+            for row in reversed(range(len(self.matrix[0]))):
+                temp.append(self.matrix[row][col])
+            out.append(temp)
+        self.matrix = out
 
-def reverse(mat):
-    new_mat = []
-    for i in range(4):
-        new_mat.append([])
-        for j in range(4):
-            new_mat[i].append(mat[i][3 - j])
-    return new_mat
+    def double_rotate(self):
+        for j in range(2):
+            self.rotate()
 
-def transpose(mat):
-    new_mat = []
-    for i in range(4):
-        new_mat.append([])
-        for j in range(4):
-            new_mat[i].append(mat[j][i])
-    return new_mat
+    def merge(self):
+        matrix_copy = copy.deepcopy(self.matrix)
+        for col in range(len(self.matrix[0])):
+            s = []
+            for row in range(len(self.matrix)):
+                if self.matrix[row][col] != 0:
+                    s.append(self.matrix[row][col])
+            i = 0
+            while i < len(s) - 1:
+                if s[i] == s[i+1]:
+                    s[i] *= 2
+                    self.merge_score += s[i]
+                    s.pop(i+1)
+                    i -= 1
+                i += 1
+            for row in range(len(self.matrix)):
+                if len(s) > 0:
+                    val = s.pop(0)
+                    self.matrix[row][col] = val
+                else:
+                    self.matrix[row][col] = 0
 
-def move_left(grid):
-    new_grid, changed1 = compress(grid)
-    new_grid, changed2 = merge(new_grid)
-    changed = changed1 or changed2
-    new_grid, _ = compress(new_grid)
-    return new_grid, changed
+        if matrix_copy != self.matrix:
+            self.get_number()       
+        self.check_game()
 
-def move_right(grid):
-    new_grid = reverse(grid)
-    new_grid, changed = move_left(new_grid)
-    new_grid = reverse(new_grid)
-    return new_grid, changed
+    def move_up(self):
+        self.merge()
 
-def move_up(grid):
-    new_grid = transpose(grid)
-    new_grid, changed = move_left(new_grid)
-    new_grid = transpose(new_grid)
-    return new_grid, changed
+    def move_down(self):
+        self.double_rotate()
+        self.merge()
+        self.double_rotate()
 
-def move_down(grid):
-    new_grid = transpose(grid)
-    new_grid, changed = move_right(new_grid)
-    new_grid = transpose(new_grid)
-    return new_grid, changed
+    def move_right(self):
+        self.double_rotate()
+        self.rotate()
+        self.merge()
+        self.rotate()
 
+    def move_left(self):
+        self.rotate()
+        self.merge()
+        self.double_rotate()
+        self.rotate()
+
+    def make_move(self, move):
+        if move == 0:
+            self.move_up()        
+        if move == 1:
+            self.move_down()
+        if move == 2:
+            self.move_left()
+        if move == 3:
+            self.move_right()
+
+    def get_sum(self):
+        total_sum = 0
+        for row in self.matrix:
+            total_sum += sum(row)
+        return total_sum
+
+    def max_num(self):
+        return max(map(max, self.matrix))
+
+    def get_merge_score(self):
+        return self.merge_score
