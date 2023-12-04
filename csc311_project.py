@@ -1,45 +1,40 @@
 import logic2048 as logic
 
-def print_board(mat):
-    for row in mat:
-        print(" ".join(str(cell) if cell != 0 else '.' for cell in row))
-    print()
+def print_instructions():
+    print("Use the following keys to make a move:")
+    print("W or w: Move Up")
+    print("S or s: Move Down")
+    print("A or a: Move Left")
+    print("D or d: Move Right")
+    print("Q or q: Quit the game")
+
 
 def main():
-    mat = logic.start_game()
+    game = logic.Game2048()
+    print_instructions()
 
-    while True:
-        print_board(mat)
-        move = input("Enter your move (W/A/S/D) or 'Q' to quit: ").upper()
+    while not game.game_end:
+        print("\nCurrent Board:")
+        print(game)
 
-        if move == 'Q':
-            print("Quitting the game. Goodbye!")
+        move = input("Enter your move (W/S/A/D or Q to quit): ").lower()
+
+        if move == 'q':
+            print("Quitting the game. Your final score:", game.get_merge_score())
             break
-
-        if move in ('W', 'A', 'S', 'D'):
-            if move == 'W':
-                mat, flag = logic.move_up(mat)
-            elif move == 'A':
-                mat, flag = logic.move_left(mat)
-            elif move == 'S':
-                mat, flag = logic.move_down(mat)
-            elif move == 'D':
-                mat, flag = logic.move_right(mat)
-
-            status = logic.get_current_state(mat)[0]
-            score = logic.get_current_state(mat)[1]
-            print(status)
-            print("SCORE: ",score)
-
-            if status == 'GAME NOT OVER':
-                logic.add_new(mat)
-            else:
-                print("Game over! Final state:")
-                print_board(mat)
-                break
-
+        elif move in ['w', 's', 'a', 'd']:
+            if move == 'w':
+                game.make_move(0)  # Move Up
+            elif move == 's':
+                game.make_move(1)  # Move Down
+            elif move == 'a':
+                game.make_move(2)  # Move Left
+            elif move == 'd':
+                game.make_move(3)  # Move Right
         else:
-            print("Invalid move. Please enter W, A, S, D, or Q.")
+            print("Invalid move! Please use W/S/A/D to make a move or Q to quit.")
+
+    print("Game over! Your final score:", game.get_merge_score())
 
 if __name__ == "__main__":
     main()
