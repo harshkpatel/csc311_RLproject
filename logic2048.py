@@ -1,6 +1,6 @@
 import random
 import copy
-
+import numpy as np
 class Game2048():
     def __init__(self):
         self.matrix = [[0,0,0,0] for i in range(4)]
@@ -115,8 +115,19 @@ class Game2048():
             total_sum += sum(row)
         return total_sum
 
-    def max_num(self):
+    def get(self):
         return max(map(max, self.matrix))
 
     def get_merge_score(self):
         return self.merge_score
+    
+    def get_actions():
+        return (0, 1, 2, 3)
+
+    def get_state(self):
+        return np.array(self.matrix).reshape((1, 4, 4))
+
+    def get_preprocessed_state(self):
+        raw =  np.array(self.matrix).reshape((1, 4, 4)).astype(float)
+        raw[raw > 0] = np.log2(raw[raw > 0])
+        return raw
