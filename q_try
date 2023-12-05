@@ -104,7 +104,6 @@ class QN_2048(object):
 
 def train():
     qn = QN_2048([0,1,2,3])
-    game = logic.Game2048()
     upper_bound = []
     for i in range(epoch):
         game = logic.Game2048()
@@ -113,15 +112,15 @@ def train():
             action_index, action = qn.choose_action(state)
             game.make_move(action)
             pay = game.get()
-            result = game.check_game()
+            result = game.game_end
             qn.store_transition(state.numpy(), action_index, pay, game.get_preprocessed_state())
             if qn.memory_counter > memory_capacity:
                 qn.learn()
             if result == True:
-                upper_bound.append(game.get_max())
+                upper_bound.append(game.get())
                 break
-        print ("In epoch", i, ", max_block =", upper_bound[-1])
-        print (game)
+        print("In epoch", i, ", max_block =", upper_bound[-1])
+        print(game)
     plt.plot(upper_bound)
     plt.show()
 
