@@ -27,9 +27,9 @@ class NeuralNetwork(nn.Module):
         self.input_size = input_size
         self.output_size = output_size
         self.alpha = alpha
-        H_out = (input_size[1] - 1) * 2 + 2
-        W_out = (input_size[2] - 1) * 2 + 2
-        self.fc1 = nn.Linear(3 * H_out * W_out, 400)
+        w = (input_size[2] - 1) * 2 + 2
+        h = (input_size[1] - 1) * 2 + 2
+        self.fc1 = nn.Linear(3 * h * w, 400)
         self.fc2 = nn.Linear(400, 50)
         self.fc3 = nn.Linear(50, output_size)
         self.conv_transpose = nn.ConvTranspose2d(self.input_size[0], 3, kernel_size=2, stride=2)
@@ -41,11 +41,11 @@ class NeuralNetwork(nn.Module):
                 nn.init.constant_(module.bias.data, 0)
 
     def forward(self, input_vector):
-        out0 = self.conv_transpose(input_vector).view(-1, 24 * 8)
-        out1 = F.leaky_relu(self.fc1(out0), negative_slope=self.alpha)
-        out2 = F.leaky_relu(self.fc2(out1), negative_slope=self.alpha)
-        out3 = F.leaky_relu(self.fc3(out2), negative_slope=self.alpha)
-        actions_value = out3
+        output0 = self.conv_transpose(input_vector).view(-1, 24 * 8)
+        output1 = F.leaky_relu(self.fc1(output0), negative_slope=self.alpha)
+        output2 = F.leaky_relu(self.fc2(output1), negative_slope=self.alpha)
+        output3 = F.leaky_relu(self.fc3(output2), negative_slope=self.alpha)
+        actions_value = output3
         return actions_value
 
 class QNetwork2048(object):
