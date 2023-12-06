@@ -115,11 +115,18 @@ class Game2048():
             total_sum += sum(row)
         return total_sum
 
-    def get(self):
+    def max_num(self):
         return max(map(max, self.matrix))
 
     def get_merge_score(self):
         return self.merge_score
+
+    def get_left_max(self):
+        total_sum = 0
+        for i in range(3):
+            for j in range(3):
+                total_sum += self.matrix[i][j]
+        return total_sum
     
     def get_actions():
         return (0, 1, 2, 3)
