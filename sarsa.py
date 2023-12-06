@@ -89,28 +89,21 @@ def sarsa_test(agent, episodes):
 
     return highest_tiles_testing
 
-# Train the SARSA agent
 if __name__ == "__main__":
     agent = SARSA()
-
-    # Train and collect data
     training_rewards = train_sarsa(agent, 2000)
-
-    # Test and collect data
     testing_rewards = sarsa_test(agent, 750)
-
-    # Plotting
     plt.figure(figsize=(10, 12))
 
-    # Training Rewards
-    plt.subplot(2, 1, 1)  # 2 rows, 1 column, first plot
+    # Training Score
+    plt.subplot(2, 1, 1)
     plt.plot(training_rewards)
     plt.title('Training: Highest Tile per Episode')
     plt.xlabel('Episode')
     plt.ylabel('Highest Tile')
 
-    # Testing Rewards
-    plt.subplot(2, 1, 2)  # 2 rows, 1 column, second plot
+    # Testing Score
+    plt.subplot(2, 1, 2)
     plt.plot(testing_rewards)
     plt.title('Testing: Highest Tile per Episode')
     plt.xlabel('Episode')
